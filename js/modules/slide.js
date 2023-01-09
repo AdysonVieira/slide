@@ -61,10 +61,44 @@ export default class Slide {
         this.onEnd = this.onEnd.bind(this)
     }
 
+    // config
+
+    slidePosition(item) {
+        const marginLeft = (this.wrapper.offsetWidth - item.offsetWidth) / 2
+        return -(item.offsetLeft - marginLeft)
+    }
+
+    slideConfig() {
+        const configArr = [ ...this.slide.children ].map( (element) => {
+            const position = this.slidePosition(element)
+            return {
+                element,
+                position
+            }
+        })
+        this.slideArr = configArr
+    }
+
+    slideNavIndex(index) {
+        const lastItem = this.slideArr.length - 1
+        this.navigator = {
+            prev: index ? index - 1 : undefined,
+            active: index,
+            next: (lastItem === index) ? undefined : index + 1
+        }
+    }
+
+    changeSlide(index) {
+        this.moveSlide(this.slideArr[index].position)
+        this.slideNavIndex(index)
+        this.dist.finalPosition = this.slideArr[index].position
+    }
+
     init() {
         if (this.slide && this.wrapper) {
             this.bindElements();
             this.addSlideEvents();
+            this.slideConfig();
         }
     }
 }
