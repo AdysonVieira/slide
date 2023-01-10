@@ -141,5 +141,5 @@ export default class Slide {
             this.slideConfig();
             // this.autoPlay();
         }
-4 }
+    }
 }
