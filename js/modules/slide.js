@@ -177,13 +177,11 @@ export class SlideNav extends Slide {
     addArrow(prev, next){
         this.arrowPrev = document.querySelector(prev)
         this.arrowNext = document.querySelector(next)
-        console.log(this.arrowPrev)
-        this.addSlideEvents();
+        this.addArrowEvents();
     }
     
     addArrowEvents() {
         this.arrowPrev.addEventListener('click', this.prevSlide)
         this.arrowNext.addEventListener('click', this.nextSlide)
     }
-
 }
