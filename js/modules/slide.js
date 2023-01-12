@@ -184,4 +184,28 @@ export class SlideNav extends Slide {
         this.arrowPrev.addEventListener('click', this.prevSlide)
         this.arrowNext.addEventListener('click', this.nextSlide)
     }
+
+    createControl() {
+        const control = document.createElement('ul');
+        control.dataset.control = "slide"
+        this.slideArr.forEach( (item, index) => {
+            control.innerHTML += `<li><a href="slide${index + 1}">${index + 1}</a></li>`;
+        })
+        this.wrapper.appendChild(control)
+        return control
+    }
+
+    addControlEvent(item, index) {
+        item.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.changeSlide(index);
+        })
+    }
+
+    addControl(customControl) {
+        this.control = document.querySelector(customControl) || this.createControl();
+        this.controlArr = [...this.control.children]
+        this.controlArr.forEach(this.addControlEvent)
+    }
+
 }
