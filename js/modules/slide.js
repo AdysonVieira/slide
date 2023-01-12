@@ -9,6 +9,7 @@ export class Slide {
             finalPosition: 0,
             movement: 0
         }
+        this.changeEvent = new Event('changeEvent')
     }
 
     transition(boo) {
@@ -100,6 +101,7 @@ export class Slide {
         this.slideNavIndex(index)
         this.dist.finalPosition = this.slideArr[index].position
         this.changeActiveClass();
+        this.wrapper.dispatchEvent(this.changeEvent)
     }
     
     prevSlide() {
@@ -114,15 +116,6 @@ export class Slide {
         }
     }
     
-    autoPlay() {
-        const interval = setInterval(() => {
-            this.nextSlide()
-            if (this.navigator.next === undefined) {
-                clearInterval(interval)
-            }
-        }, 4000)
-    }
-
     onResize() {
         setTimeout(() => {
             this.slideConfig()
@@ -157,7 +150,6 @@ export class Slide {
         this.onResize = debounce(this.onResize.bind(this), 200)
         this.prevSlide = this.prevSlide.bind(this)
         this.nextSlide = this.nextSlide.bind(this)
-
     }
 
     init() {
@@ -168,7 +160,6 @@ export class Slide {
             this.slideConfig();
             this.addResizeEvent();
             this.changeSlide(0);
-            // this.autoPlay();
         }
     }
 }
@@ -195,17 +186,42 @@ export class SlideNav extends Slide {
         return control
     }
 
+    addClassActiveOnControl() {
+        this.controlArr.forEach((item) => {
+            item.classList.remove('active')
+        })
+        this.controlArr[this.navigator.active].classList.add('active')
+    }
+    
     addControlEvent(item, index) {
         item.addEventListener('click', (event) => {
             event.preventDefault();
             this.changeSlide(index);
+            this.addClassActiveOnControl();
         })
+        this.wrapper.addEventListener('changeEvent', this.addClassActiveOnControl)
     }
-
+    
     addControl(customControl) {
         this.control = document.querySelector(customControl) || this.createControl();
-        this.controlArr = [...this.control.children]
-        this.controlArr.forEach(this.addControlEvent)
+        this.bindControlEvents();
+        this.controlArr = [...this.control.children];
+        this.controlArr.forEach(this.addControlEvent);
+    }
+
+    bindControlEvents() {
+        this.addControlEvent = this.addControlEvent.bind(this);
+        this.addClassActiveOnControl = this.addClassActiveOnControl.bind(this);
+    }
+
+    autoPlay() {
+        const interval = setInterval(() => {
+            this.addClassActiveOnControl();
+            this.nextSlide()
+            if (this.navigator.next === undefined) {
+                clearInterval(interval)
+            }
+        }, 4000)
     }
 
 }
